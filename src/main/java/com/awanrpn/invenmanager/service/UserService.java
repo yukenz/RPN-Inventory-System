@@ -3,12 +3,14 @@ package com.awanrpn.invenmanager.service;
 import com.awanrpn.invenmanager.config.ObjAutoMapper;
 import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;
+import com.awanrpn.invenmanager.model.request.UpdateUserRequest;
 import com.awanrpn.invenmanager.model.response.CreateUserResponse;
+import com.awanrpn.invenmanager.model.response.GetUserByIdResponse;
+import com.awanrpn.invenmanager.model.response.UpdateUserResponse;
 import com.awanrpn.invenmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    @Transactional(timeout = 2, propagation = Propagation.REQUIRED)
+    @Transactional(timeout = 2)
     public CreateUserResponse createUser(CreateUserRequest cur) {
 
         User user = new User();
@@ -33,11 +35,10 @@ public class UserService {
         user.setRole(cur.role());
 
         userRepository.save(user);
-
         return objAutoMapper.createUserResponse(user);
     }
 
-    @Transactional(timeout = 2, propagation = Propagation.REQUIRED)
+    @Transactional(timeout = 2,readOnly = true)
     public List<User> getAllUser() {
         return userRepository.findAll();
     }
@@ -45,50 +46,57 @@ public class UserService {
     /**
      * @throws IllegalArgumentException If ID Not Found
      */
-    public User getUserById(String userId) {
-        return userRepository.findById(userId)
+    @Transactional(readOnly = true)
+    public GetUserByIdResponse getUserById(String uuid) {
+
+        User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
+
+        return objAutoMapper.getUserByIdResponse(user);
     }
 
-    public User updateUser(User user) {
+    @Transactional(timeout = 2)
+    public UpdateUserResponse updateUser(String uuid, UpdateUserRequest updateUserRequest) {
 
         /* Throwable */
-        User userInDb = getUserById(user.getId());
+        User userInDb = userRepository.findById(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
 
         /* Update Name */
-        if (user.getName() != null) {
-            userInDb.setName(user.getName());
+        if (updateUserRequest.name() != null) {
+            userInDb.setName(updateUserRequest.name());
         }
 
         /* Update Email */
-        if (user.getEmail() != null) {
-            userInDb.setEmail(user.getEmail());
+        if (updateUserRequest.email() != null) {
+            userInDb.setEmail(updateUserRequest.email());
         }
 
         /* Update Password */
-        if (user.getPassword() != null) {
-            userInDb.setPassword(user.getPassword());
+        if (updateUserRequest.password() != null) {
+            userInDb.setPassword(updateUserRequest.password());
         }
 
         /* Update Role */
-        if (user.getRole() != null) {
-            userInDb.setRole(user.getRole());
+        if (updateUserRequest.role() != null) {
+            userInDb.setRole(updateUserRequest.role());
         }
 
-        userRepository.save(userInDb);
+        User userSaved = userRepository.save(userInDb);
 
-        return userInDb;
+        return objAutoMapper.updateUserResponse(userSaved);
     }
 
-    public User deleteUser(User user) {
+    @Transactional(timeout = 2)
+    public Boolean deleteUser(String uuid) {
 
-        try {
-            userRepository.delete(user);
-            return user;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
+        /* Throwable */
+        User userInDb = userRepository.findById(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
 
+        userRepository.delete(userInDb);
+
+        return true;
     }
 
 }

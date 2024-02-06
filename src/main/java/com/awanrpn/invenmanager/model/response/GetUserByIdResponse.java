@@ -1,16 +1,17 @@
 package com.awanrpn.invenmanager.model.response;
 
+import com.awanrpn.invenmanager.model.entity.Token;
 import com.awanrpn.invenmanager.model.entity.User;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-public record CreateUserResponse(
+public record GetUserByIdResponse(
         String id,
         String name,
         String email,
+        String password,
         User.Role role,
-        LocalDateTime createdAt
+        List<Token> tokens
 
 ) {
-
 }

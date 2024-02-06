@@ -2,13 +2,16 @@ package com.awanrpn.invenmanager.controller;
 
 import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;
+import com.awanrpn.invenmanager.model.request.UpdateUserRequest;
 import com.awanrpn.invenmanager.model.response.CreateUserResponse;
+import com.awanrpn.invenmanager.model.response.GetUserByIdResponse;
 import com.awanrpn.invenmanager.model.response.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.response.UpdateUserResponse;
 import com.awanrpn.invenmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +23,10 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(
-            summary = "Create User"
-    )
-    @PostMapping
-    public ResponseEntity<?> createUser(
+    @Operation(summary = "Create User")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    createUser(
             @RequestBody CreateUserRequest createUserRequest
     ) {
 
@@ -33,24 +35,44 @@ public class UserController {
 
     }
 
-    @GetMapping
-    public List<User> getAllUser() {
-        return userService.getAllUser();
+    @Operation(summary = "Get All User")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    getAllUser() {
+
+        List<User> allUser = userService.getAllUser();
+        return ResponsePayloadBuilder.ok(allUser);
     }
 
-    //    @GetMapping
-    public User getUser() {
-        return null;
+    @GetMapping(path = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    getUserById(
+            @PathVariable(name = "userId") String uuid
+    ) {
+
+        GetUserByIdResponse userById = userService.getUserById(uuid);
+        return ResponsePayloadBuilder.ok(userById);
     }
 
-    //    @PutMapping
-    public User updateUser() {
-        return null;
+    @PutMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    updateUser(
+            @PathVariable(name = "userId") String uuid,
+            @RequestBody UpdateUserRequest updateUserRequest
+    ) {
+
+        UpdateUserResponse updateUserResponse = userService.updateUser(uuid, updateUserRequest);
+        return ResponsePayloadBuilder.ok(updateUserResponse);
     }
 
-    //    @DeleteMapping
-    public User deleteUser() {
-        return null;
+    @DeleteMapping(path = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    deleteUser(
+            @PathVariable(name = "userId") String uuid
+    ) {
+
+        Boolean isSuccess = userService.deleteUser(uuid);
+        return ResponsePayloadBuilder.ok(isSuccess);
     }
 
 

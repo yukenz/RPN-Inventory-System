@@ -34,7 +34,7 @@ public class User implements EntityTimeAware {
 
     @Email
     @NotNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String email;
 
     @NotNull
