@@ -1,23 +1,50 @@
 package com.awanrpn.invenmanager.model.entity;
 
+import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAware;
+import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAwareListener;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.sql.Date;
-import java.util.List;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
-public class Product {
+@EntityListeners({EntityTimeAwareListener.class})
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class Product implements EntityTimeAware {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
+    @NotNull
+    @NotBlank
     private String name;
+
+    @NotNull
+    @NotBlank
     private String description;
-    private Double price;
+
+    @NotNull
+    @Positive
+    private BigInteger price;
+
+    @NotNull
+    @PositiveOrZero
     private Integer quantityInStock;
-    private Date createdAt;
-    private Date updatedAt;
 
 
     @ManyToOne
@@ -25,6 +52,7 @@ public class Product {
             name = "category_id",
             referencedColumnName = "id"
     )
+//    @NotNull
     private Category category;
 
     @ManyToOne
@@ -32,10 +60,23 @@ public class Product {
             name = "user_id",
             referencedColumnName = "id"
     )
+    @NotNull
+    @JsonBackReference //Product di manage oleh user
     private User user;
 
-    @OneToMany(mappedBy = "product")
-    private List<OrderItem> orderItems;
+//    @OneToMany(mappedBy = "product")
+//    private List<OrderItem> orderItems;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
+    @Override
+    public void onCreate(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public void onUpdate(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

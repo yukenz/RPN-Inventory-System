@@ -38,9 +38,9 @@ public class UserController {
     @Operation(summary = "Get All User")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>
-    getAllUser() {
+    getAllUsers() {
 
-        List<User> allUser = userService.getAllUser();
+        List<User> allUser = userService.getAllUsers();
         return ResponsePayloadBuilder.ok(allUser);
     }
 
@@ -75,5 +75,14 @@ public class UserController {
         return ResponsePayloadBuilder.ok(isSuccess);
     }
 
+    /* Module External */
+    @Operation(summary = "")
+    @GetMapping(path = "/{userId}/{productId}")
+    public ResponseEntity<?> getProductByUser(
+            @PathVariable(name = "userId") String userUUID,
+            @PathVariable(name = "productId") String productUUID
+    ) {
+        return ResponsePayloadBuilder.ok(null);
+    }
 
 }

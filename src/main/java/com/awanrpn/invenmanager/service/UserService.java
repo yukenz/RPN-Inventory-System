@@ -25,22 +25,27 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(timeout = 2)
-    public CreateUserResponse createUser(CreateUserRequest cur) {
+    public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
 
-        User user = new User();
+//        User user = new User();
+//
+//        user.setName(createUserRequest.name());
+//        user.setEmail(createUserRequest.email());
+//        user.setPassword(createUserRequest.password());
+//        user.setRole(createUserRequest.role());
 
-        user.setName(cur.name());
-        user.setEmail(cur.email());
-        user.setPassword(cur.password());
-        user.setRole(cur.role());
-
+        User user = objAutoMapper.createUserFromRequest(createUserRequest);
         userRepository.save(user);
         return objAutoMapper.createUserResponse(user);
     }
 
-    @Transactional(timeout = 2,readOnly = true)
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    @Transactional(timeout = 2, readOnly = true)
+    public List<User> getAllUsers() {
+
+        List<User> all = userRepository.findAll();
+
+        return all
+                .stream().peek(user -> user.setPassword(null)).toList();
     }
 
     /**

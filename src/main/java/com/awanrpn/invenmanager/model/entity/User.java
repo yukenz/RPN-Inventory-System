@@ -2,6 +2,7 @@ package com.awanrpn.invenmanager.model.entity;
 
 import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAware;
 import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAwareListener;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -49,10 +50,11 @@ public class User implements EntityTimeAware {
         ADMIN, USER
     }
 
-    @ElementCollection
+    @ElementCollection(targetClass = Token.class)
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference // User memanage Product
     private List<Product> products;
 
     private LocalDateTime createdAt;
