@@ -1,6 +1,6 @@
 package com.awanrpn.invenmanager.service;
 
-import com.awanrpn.invenmanager.config.ObjAutoMapper;
+import com.awanrpn.invenmanager.mapper.ObjAutoMapper;
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;

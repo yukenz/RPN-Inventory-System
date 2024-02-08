@@ -21,6 +21,7 @@ public class SecurityConfig {
                 .securityMatcher("/api/**").authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
                 )
                 .authorizeHttpRequests(set -> set.anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)

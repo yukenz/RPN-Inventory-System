@@ -1,8 +1,10 @@
-package com.awanrpn.invenmanager.config;
+package com.awanrpn.invenmanager.mapper;
 
-import com.awanrpn.invenmanager.config.mapper.ProductMapper;
+import com.awanrpn.invenmanager.model.entity.Category;
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
+import com.awanrpn.invenmanager.model.request.CategoryRequest;
+import com.awanrpn.invenmanager.model.request.CategoryResponse;
 import com.awanrpn.invenmanager.model.request.CreateProductRequest;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;
 import com.awanrpn.invenmanager.model.response.*;
@@ -32,5 +34,11 @@ public interface ObjAutoMapper {
 
     @Mapping(source = "product.user.id", target = "createdByUser")
     GetProductResponse getProductResponse(Product product);
+
+    /* Category Module */
+
+    Category createCategoryFromRequest(CategoryRequest categoryRequest);
+
+    CategoryResponse categoryResponse(Category category);
 
 }

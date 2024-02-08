@@ -1,4 +1,4 @@
-package com.awanrpn.invenmanager.config.mapper;
+package com.awanrpn.invenmanager.mapper;
 
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.response.SimpleProductResponse;
