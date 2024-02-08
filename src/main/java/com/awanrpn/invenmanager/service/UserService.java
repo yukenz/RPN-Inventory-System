@@ -1,15 +1,14 @@
 package com.awanrpn.invenmanager.service;
 
 import com.awanrpn.invenmanager.config.ObjAutoMapper;
+import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;
 import com.awanrpn.invenmanager.model.request.UpdateUserRequest;
-import com.awanrpn.invenmanager.model.response.CreateUserResponse;
-import com.awanrpn.invenmanager.model.response.GetUserByIdResponse;
-import com.awanrpn.invenmanager.model.response.UpdateUserResponse;
+import com.awanrpn.invenmanager.model.response.*;
+import com.awanrpn.invenmanager.repository.ProductRepository;
 import com.awanrpn.invenmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private ObjAutoMapper objAutoMapper;
-
+    private final ObjAutoMapper objAutoMapper;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Transactional(timeout = 2)
     public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
@@ -40,12 +38,14 @@ public class UserService {
     }
 
     @Transactional(timeout = 2, readOnly = true)
-    public List<User> getAllUsers() {
+    public List<GetAllUserResponse> getAllUsers() {
 
-        List<User> all = userRepository.findAll();
+        List<User> allUsers = userRepository.findAll();
 
-        return all
-                .stream().peek(user -> user.setPassword(null)).toList();
+        return allUsers.stream()
+                .map(objAutoMapper::getAllUserResponse)
+                .toList();
+
     }
 
     /**
@@ -95,13 +95,30 @@ public class UserService {
     @Transactional(timeout = 2)
     public Boolean deleteUser(String uuid) {
 
-        /* Throwable */
-        User userInDb = userRepository.findById(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
-
-        userRepository.delete(userInDb);
+        try {
+            if (!userRepository.existsById(uuid)) {
+                throw new IllegalArgumentException("User Id tidak ditemukan");
+            }
+            userRepository.deleteById(uuid);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return true;
+    }
+
+    @Transactional(timeout = 2, readOnly = true)
+    public List<GetProductResponse> getProductsByUser(
+            String user_uuid
+    ) {
+
+        User user = userRepository.findById(user_uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
+
+        List<Product> productsByUser = productRepository.findAllByUser(user);
+
+        return productsByUser.stream()
+                .map(objAutoMapper::getProductResponse).toList();
     }
 
 }

@@ -1,9 +1,11 @@
 package com.awanrpn.invenmanager.controller;
 
 import com.awanrpn.invenmanager.model.request.CreateProductRequest;
+import com.awanrpn.invenmanager.model.request.UpdateProductRequest;
 import com.awanrpn.invenmanager.model.response.CreateProductResponse;
 import com.awanrpn.invenmanager.model.response.GetProductResponse;
 import com.awanrpn.invenmanager.model.response.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.response.UpdateProductResponse;
 import com.awanrpn.invenmanager.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,7 @@ public class ProductController {
     }
 
     @Operation(summary = "Show all products")
-    @GetMapping()
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>
     getAllProducts() {
 
@@ -40,25 +42,36 @@ public class ProductController {
         return ResponsePayloadBuilder.ok(products);
     }
 
-    @Operation(summary = "")
-    @GetMapping(path = "/{productId}")
+    @Operation(summary = "Get Product by ID")
+    @GetMapping(path = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>
     getProductById(
             @PathVariable(name = "productId") String uuid
     ) {
-        return ResponsePayloadBuilder.ok(null);
+        GetProductResponse productById = productService.getProductById(uuid);
+        return ResponsePayloadBuilder.ok(productById);
     }
 
-    @Operation(summary = "")
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateProductById() {
-        return ResponsePayloadBuilder.ok(null);
+    @Operation(summary = "Update Product by ID")
+    @PutMapping(path = "/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    updateProductById(
+            @PathVariable(name = "productId") String uuid,
+            @RequestBody UpdateProductRequest updateProductRequest
+    ) {
+        UpdateProductResponse updateProductResponse = productService.updateProductById(uuid, updateProductRequest);
+        return ResponsePayloadBuilder.ok(updateProductResponse);
     }
 
-    @Operation(summary = "")
-    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteProduct() {
-        return ResponsePayloadBuilder.ok(null);
+    @Operation(summary = "Delete Product by ID")
+    @DeleteMapping(path = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    deleteProduct(
+            @PathVariable(name = "productId") String uuid
+    ) {
+
+        Boolean isSuccess = productService.deleteProduct(uuid);
+        return ResponsePayloadBuilder.ok(isSuccess);
     }
 
 

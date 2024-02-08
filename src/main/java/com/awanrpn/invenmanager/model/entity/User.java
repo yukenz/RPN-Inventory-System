@@ -2,6 +2,7 @@ package com.awanrpn.invenmanager.model.entity;
 
 import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAware;
 import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAwareListener;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

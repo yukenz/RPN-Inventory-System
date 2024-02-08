@@ -1,12 +1,8 @@
 package com.awanrpn.invenmanager.controller;
 
-import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;
 import com.awanrpn.invenmanager.model.request.UpdateUserRequest;
-import com.awanrpn.invenmanager.model.response.CreateUserResponse;
-import com.awanrpn.invenmanager.model.response.GetUserByIdResponse;
-import com.awanrpn.invenmanager.model.response.ResponsePayloadBuilder;
-import com.awanrpn.invenmanager.model.response.UpdateUserResponse;
+import com.awanrpn.invenmanager.model.response.*;
 import com.awanrpn.invenmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +36,8 @@ public class UserController {
     public ResponseEntity<?>
     getAllUsers() {
 
-        List<User> allUser = userService.getAllUsers();
+        List<GetAllUserResponse> allUser = userService.getAllUsers();
+
         return ResponsePayloadBuilder.ok(allUser);
     }
 
@@ -77,12 +74,15 @@ public class UserController {
 
     /* Module External */
     @Operation(summary = "")
-    @GetMapping(path = "/{userId}/{productId}")
+    @GetMapping(path = "/{userId}/products")
     public ResponseEntity<?> getProductByUser(
-            @PathVariable(name = "userId") String userUUID,
-            @PathVariable(name = "productId") String productUUID
+            @PathVariable(name = "userId") String user_uuid
     ) {
-        return ResponsePayloadBuilder.ok(null);
+
+        List<GetProductResponse> productsByUser
+                = userService.getProductsByUser(user_uuid);
+
+        return ResponsePayloadBuilder.ok(productsByUser);
     }
 
 }

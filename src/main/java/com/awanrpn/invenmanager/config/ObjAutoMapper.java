@@ -1,16 +1,15 @@
 package com.awanrpn.invenmanager.config;
 
+import com.awanrpn.invenmanager.config.mapper.ProductMapper;
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.model.request.CreateProductRequest;
 import com.awanrpn.invenmanager.model.request.CreateUserRequest;
-import com.awanrpn.invenmanager.model.response.CreateProductResponse;
-import com.awanrpn.invenmanager.model.response.CreateUserResponse;
-import com.awanrpn.invenmanager.model.response.GetUserByIdResponse;
-import com.awanrpn.invenmanager.model.response.UpdateUserResponse;
+import com.awanrpn.invenmanager.model.response.*;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(uses = {ProductMapper.class})
 public interface ObjAutoMapper {
 
     /* User Module */
@@ -22,10 +21,16 @@ public interface ObjAutoMapper {
 
     UpdateUserResponse updateUserResponse(User user);
 
-    /* Product Module */
+    GetAllUserResponse getAllUserResponse(User user);
 
+    /* Product Module */
     Product createProductFromRequest(CreateProductRequest createProductRequest);
 
     CreateProductResponse createProductResponse(Product product);
+
+    UpdateProductResponse updateProductResponse(Product product);
+
+    @Mapping(source = "product.user.id", target = "createdByUser")
+    GetProductResponse getProductResponse(Product product);
 
 }

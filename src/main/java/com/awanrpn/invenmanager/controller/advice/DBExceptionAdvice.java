@@ -16,4 +16,10 @@ public class DBExceptionAdvice {
         return ResponsePayloadBuilder.err(e, HttpStatus.INTERNAL_SERVER_ERROR, 500);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    ResponseEntity<?> illegalArgumentException(IllegalArgumentException e) {
+        return ResponsePayloadBuilder.err(e, HttpStatus.UNPROCESSABLE_ENTITY, 400);
+    }
+
+
 }
