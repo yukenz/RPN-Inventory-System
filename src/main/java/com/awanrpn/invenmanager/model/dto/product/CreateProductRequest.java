@@ -1,4 +1,4 @@
-package com.awanrpn.invenmanager.model.request;
+package com.awanrpn.invenmanager.model.dto.product;
 
 import com.awanrpn.invenmanager.model.entity.User;
 
@@ -7,7 +7,7 @@ public record CreateProductRequest(
         String description,
         Double price,
         Integer quantityInStock,
-        User user
+        String user_uuid
 
 ) {
 }

@@ -15,6 +15,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -52,7 +53,7 @@ public class User implements EntityTimeAware {
     }
 
     @ElementCollection(targetClass = Token.class)
-    private List<Token> tokens;
+    private Set<Token> tokens;
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference // User memanage Product

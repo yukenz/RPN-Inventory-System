@@ -1,4 +1,4 @@
-package com.awanrpn.invenmanager.model.response;
+package com.awanrpn.invenmanager.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,11 +1,11 @@
-package com.awanrpn.invenmanager.model.request;
+package com.awanrpn.invenmanager.model.dto.user;
 
 import com.awanrpn.invenmanager.model.entity.User;
 
-public record UpdateUserRequest(
+public record GetAllUserResponse(
+        String id,
         String name,
         String email,
-        String password,
         User.Role role
 ) {
 }

@@ -1,13 +1,14 @@
-package com.awanrpn.invenmanager.model.response;
+package com.awanrpn.invenmanager.model.dto.product;
 
 import java.time.LocalDateTime;
 
-public record CreateProductResponse(
+public record UpdateProductResponse(
         String id,
         String name,
         String description,
+        String category,
         Double price,
         Integer quantityInStock,
-        LocalDateTime createdAt
+        LocalDateTime updatedAt
 ) {
 }

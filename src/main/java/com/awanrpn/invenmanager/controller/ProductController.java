@@ -1,13 +1,14 @@
 package com.awanrpn.invenmanager.controller;
 
-import com.awanrpn.invenmanager.model.request.CreateProductRequest;
-import com.awanrpn.invenmanager.model.request.UpdateProductRequest;
-import com.awanrpn.invenmanager.model.response.CreateProductResponse;
-import com.awanrpn.invenmanager.model.response.GetProductResponse;
-import com.awanrpn.invenmanager.model.response.ResponsePayloadBuilder;
-import com.awanrpn.invenmanager.model.response.UpdateProductResponse;
+import com.awanrpn.invenmanager.model.dto.product.CreateProductRequest;
+import com.awanrpn.invenmanager.model.dto.product.UpdateProductRequest;
+import com.awanrpn.invenmanager.model.dto.product.CreateProductResponse;
+import com.awanrpn.invenmanager.model.dto.product.GetProductResponse;
+import com.awanrpn.invenmanager.model.dto.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.dto.product.UpdateProductResponse;
 import com.awanrpn.invenmanager.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/products")
 @RequiredArgsConstructor
+@Tag(name = "Product Module")
 public class ProductController {
 
     private final ProductService productService;

@@ -1,4 +1,4 @@
-package com.awanrpn.invenmanager.model.request;
+package com.awanrpn.invenmanager.model.dto.category;
 
 public record CategoryResponse(
         String id,

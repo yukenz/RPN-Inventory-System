@@ -1,14 +1,11 @@
 package com.awanrpn.invenmanager.service;
 
-import com.awanrpn.invenmanager.mapper.ObjAutoMapper;
+import com.awanrpn.invenmanager.mapper.DTOMapper;
+import com.awanrpn.invenmanager.mapper.ProductMapper;
+import com.awanrpn.invenmanager.model.dto.product.*;
 import com.awanrpn.invenmanager.model.entity.Category;
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
-import com.awanrpn.invenmanager.model.request.CreateProductRequest;
-import com.awanrpn.invenmanager.model.request.UpdateProductRequest;
-import com.awanrpn.invenmanager.model.response.CreateProductResponse;
-import com.awanrpn.invenmanager.model.response.GetProductResponse;
-import com.awanrpn.invenmanager.model.response.UpdateProductResponse;
 import com.awanrpn.invenmanager.repository.CategoryRepository;
 import com.awanrpn.invenmanager.repository.ProductRepository;
 import com.awanrpn.invenmanager.repository.UserRepository;
@@ -26,17 +23,21 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final ObjAutoMapper objAutoMapper;
+    private final ProductMapper productMapper = DTOMapper.PRODUCT_MAPPER;
 
 
     @Transactional(timeout = 2)
     public CreateProductResponse
     createProduct(CreateProductRequest createProductRequest) {
 
-        Product newProduct = objAutoMapper.createProductFromRequest(createProductRequest);
-        Product product = productRepository.save(newProduct);
+        User user = userRepository.findById(createProductRequest.user_uuid())
+                .orElseThrow(() -> new IllegalArgumentException("ID User tidak ditemukan"));
 
-        return objAutoMapper.createProductResponse(product);
+        Product productPreSave = productMapper.createProductFromRequest(createProductRequest);
+        productPreSave.setUser(user);
+
+        Product productSaved = productRepository.save(productPreSave);
+        return productMapper.createProductResponse(productSaved);
 
     }
 
@@ -47,7 +48,7 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
 
         return products.stream()
-                .map(objAutoMapper::getProductResponse)
+                .map(productMapper::getProductResponse)
                 .toList();
     }
 
@@ -59,7 +60,7 @@ public class ProductService {
         Product product = productRepository.findById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("ID Product tidak ditemukan"));
 
-        return objAutoMapper.getProductResponse(product);
+        return productMapper.getProductResponse(product);
     }
 
     @Transactional(timeout = 2)
@@ -69,7 +70,7 @@ public class ProductService {
             UpdateProductRequest updateProductRequest
     ) {
 
-        Product product = productRepository.findById(uuid)
+        Product productPreSave = productRepository.findById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("ID Product tidak ditemukan"));
 
         String name = updateProductRequest.name();
@@ -80,19 +81,21 @@ public class ProductService {
         String user_uuid = updateProductRequest.user_uuid();
 
         Category category = categoryRepository.findById(category_uuid)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException("Category dengan id tersebut tidak ada"));
 
         User user = userRepository.findById(user_uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User dengan id tersebut tidak ada"));
 
-        product.setName(name);
-        product.setDescription(description);
-        product.setPrice(price);
-        product.setQuantityInStock(quantityInStock);
-        product.setCategory(category);
-        product.setUser(user);
+        productPreSave.setName(name);
+        productPreSave.setDescription(description);
+        productPreSave.setPrice(price);
+        productPreSave.setQuantityInStock(quantityInStock);
 
-        return objAutoMapper.updateProductResponse(product);
+        productPreSave.setCategory(category);
+        productPreSave.setUser(user);
+
+        Product productSaved = productRepository.save(productPreSave);
+        return productMapper.updateProductResponse(productSaved);
     }
 
     @Transactional(timeout = 2)

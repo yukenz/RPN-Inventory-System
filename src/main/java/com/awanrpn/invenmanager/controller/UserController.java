@@ -1,10 +1,12 @@
 package com.awanrpn.invenmanager.controller;
 
-import com.awanrpn.invenmanager.model.request.CreateUserRequest;
-import com.awanrpn.invenmanager.model.request.UpdateUserRequest;
-import com.awanrpn.invenmanager.model.response.*;
+import com.awanrpn.invenmanager.model.dto.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.dto.product.GetProductResponse;
+import com.awanrpn.invenmanager.model.dto.user.*;
+import com.awanrpn.invenmanager.model.entity.Order;
 import com.awanrpn.invenmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "User Module")
 public class UserController {
 
     private final UserService userService;
@@ -83,6 +86,17 @@ public class UserController {
                 = userService.getProductsByUser(user_uuid);
 
         return ResponsePayloadBuilder.ok(productsByUser);
+    }
+
+    @Operation(summary = "")
+    @GetMapping(path = "/{userId}/orders")
+    public ResponseEntity<?> getOrdersByUser(
+            @PathVariable(name = "userId") String user_uuid
+    ) {
+
+        /* User Id dari Principal masih null */
+        List<Order> ordersByUser = userService.getOrdersByUser(user_uuid);
+        return ResponsePayloadBuilder.ok(ordersByUser);
     }
 
 }

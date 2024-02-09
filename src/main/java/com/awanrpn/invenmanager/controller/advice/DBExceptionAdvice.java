@@ -1,6 +1,6 @@
 package com.awanrpn.invenmanager.controller.advice;
 
-import com.awanrpn.invenmanager.model.response.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.dto.ResponsePayloadBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

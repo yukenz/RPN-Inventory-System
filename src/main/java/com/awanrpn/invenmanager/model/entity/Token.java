@@ -1,15 +1,20 @@
 package com.awanrpn.invenmanager.model.entity;
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Embeddable
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Token {
     private String token;
     private String type;
-    private Date expires;
+    private LocalDateTime expires;
     private boolean blacklisted;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
 }

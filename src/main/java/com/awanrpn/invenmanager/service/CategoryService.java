@@ -1,9 +1,10 @@
 package com.awanrpn.invenmanager.service;
 
-import com.awanrpn.invenmanager.mapper.ObjAutoMapper;
+import com.awanrpn.invenmanager.mapper.CategoryMapper;
+import com.awanrpn.invenmanager.mapper.DTOMapper;
 import com.awanrpn.invenmanager.model.entity.Category;
-import com.awanrpn.invenmanager.model.request.CategoryRequest;
-import com.awanrpn.invenmanager.model.request.CategoryResponse;
+import com.awanrpn.invenmanager.model.dto.category.CategoryRequest;
+import com.awanrpn.invenmanager.model.dto.category.CategoryResponse;
 import com.awanrpn.invenmanager.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final ObjAutoMapper objAutoMapper;
+    private final CategoryMapper categoryMapper = DTOMapper.CATEGORY_MAPPER;
 
     @Transactional(timeout = 2)
     public CategoryResponse
@@ -24,10 +25,10 @@ public class CategoryService {
             CategoryRequest categoryRequest
     ) {
 
-        Category category = objAutoMapper.createCategoryFromRequest(categoryRequest);
+        Category category = categoryMapper.createCategoryFromRequest(categoryRequest);
         Category categoryInDB = categoryRepository.save(category);
 
-        return objAutoMapper.categoryResponse(categoryInDB);
+        return categoryMapper.categoryResponse(categoryInDB);
     }
 
     @Transactional(timeout = 2, readOnly = true)
@@ -36,7 +37,7 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findAll();
 
         return categories.stream()
-                .map(objAutoMapper::categoryResponse).toList();
+                .map(categoryMapper::categoryResponse).toList();
     }
 
     @Transactional(timeout = 2, readOnly = true)
@@ -45,7 +46,7 @@ public class CategoryService {
         Category category = categoryRepository.findById(uuid)
                 .orElseThrow((() -> new IllegalArgumentException("User Id tidak ditemukan")));
 
-        return objAutoMapper.categoryResponse(category);
+        return categoryMapper.categoryResponse(category);
     }
 
     @Transactional(timeout = 2)
@@ -58,7 +59,7 @@ public class CategoryService {
         category.setName(categoryRequest.name());
         categoryRepository.save(category);
 
-        return objAutoMapper.categoryResponse(category);
+        return categoryMapper.categoryResponse(category);
     }
 
     @Transactional(timeout = 2)

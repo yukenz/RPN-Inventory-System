@@ -10,10 +10,7 @@ public class EntityTimeAwareListener {
 
     @PrePersist
     void preSave(EntityTimeAware object) {
-        LocalDateTime now = LocalDateTime.now();
-        object.onCreate(now);
-        object.onUpdate(now);
-
+        object.onCreate(LocalDateTime.now());
     }
 
     @PreUpdate

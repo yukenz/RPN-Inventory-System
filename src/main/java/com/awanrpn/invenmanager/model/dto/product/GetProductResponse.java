@@ -1,6 +1,6 @@
-package com.awanrpn.invenmanager.model.response;
+package com.awanrpn.invenmanager.model.dto.product;
 
-import com.awanrpn.invenmanager.model.entity.Category;
+import com.awanrpn.invenmanager.model.dto.category.SimpleCategory;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public record GetProductResponse(
         String description,
         BigInteger price,
         Integer quantityInStock,
-        Category category,
+        String category,
         String createdByUser,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

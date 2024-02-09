@@ -1,4 +1,4 @@
-package com.awanrpn.invenmanager.model.response;
+package com.awanrpn.invenmanager.model.dto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

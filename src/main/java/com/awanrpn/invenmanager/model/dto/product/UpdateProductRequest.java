@@ -1,4 +1,4 @@
-package com.awanrpn.invenmanager.model.request;
+package com.awanrpn.invenmanager.model.dto.product;
 
 import com.awanrpn.invenmanager.model.entity.Category;
 import com.awanrpn.invenmanager.model.entity.User;

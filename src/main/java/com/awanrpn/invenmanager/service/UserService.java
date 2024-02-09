@@ -1,11 +1,14 @@
 package com.awanrpn.invenmanager.service;
 
-import com.awanrpn.invenmanager.mapper.ObjAutoMapper;
+import com.awanrpn.invenmanager.mapper.DTOMapper;
+import com.awanrpn.invenmanager.mapper.ProductMapper;
+import com.awanrpn.invenmanager.mapper.UserMapper;
+import com.awanrpn.invenmanager.model.dto.product.GetProductResponse;
+import com.awanrpn.invenmanager.model.dto.user.*;
+import com.awanrpn.invenmanager.model.entity.Order;
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
-import com.awanrpn.invenmanager.model.request.CreateUserRequest;
-import com.awanrpn.invenmanager.model.request.UpdateUserRequest;
-import com.awanrpn.invenmanager.model.response.*;
+import com.awanrpn.invenmanager.repository.OrderRepository;
 import com.awanrpn.invenmanager.repository.ProductRepository;
 import com.awanrpn.invenmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final ObjAutoMapper objAutoMapper;
+    private final UserMapper userMapper = DTOMapper.USER_MAPPER;
+    private final ProductMapper productMapper = DTOMapper.PRODUCT_MAPPER;
+
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional(timeout = 2)
     public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
@@ -32,9 +38,9 @@ public class UserService {
 //        user.setPassword(createUserRequest.password());
 //        user.setRole(createUserRequest.role());
 
-        User user = objAutoMapper.createUserFromRequest(createUserRequest);
+        User user = userMapper.createUserFromRequest(createUserRequest);
         userRepository.save(user);
-        return objAutoMapper.createUserResponse(user);
+        return userMapper.createUserResponse(user);
     }
 
     @Transactional(timeout = 2, readOnly = true)
@@ -43,7 +49,7 @@ public class UserService {
         List<User> allUsers = userRepository.findAll();
 
         return allUsers.stream()
-                .map(objAutoMapper::getAllUserResponse)
+                .map(userMapper::getAllUserResponse)
                 .toList();
 
     }
@@ -57,7 +63,7 @@ public class UserService {
         User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
 
-        return objAutoMapper.getUserByIdResponse(user);
+        return userMapper.getUserByIdResponse(user);
     }
 
     @Transactional(timeout = 2)
@@ -89,7 +95,7 @@ public class UserService {
 
         User userSaved = userRepository.save(userInDb);
 
-        return objAutoMapper.updateUserResponse(userSaved);
+        return userMapper.updateUserResponse(userSaved);
     }
 
     @Transactional(timeout = 2)
@@ -108,7 +114,8 @@ public class UserService {
     }
 
     @Transactional(timeout = 2, readOnly = true)
-    public List<GetProductResponse> getProductsByUser(
+    public List<GetProductResponse>
+    getProductsByUser(
             String user_uuid
     ) {
 
@@ -118,7 +125,14 @@ public class UserService {
         List<Product> productsByUser = productRepository.findAllByUser(user);
 
         return productsByUser.stream()
-                .map(objAutoMapper::getProductResponse).toList();
+                .map(productMapper::getProductResponse).toList();
+    }
+
+    @Transactional(timeout = 2, readOnly = true)
+    public List<Order>
+    getOrdersByUser(String user_uuid) {
+
+        return orderRepository.findAllByUserid(user_uuid);
     }
 
 }

@@ -1,9 +1,10 @@
 package com.awanrpn.invenmanager;
 
-import com.awanrpn.invenmanager.mapper.ObjAutoMapper;
+import com.awanrpn.invenmanager.mapper.DTOMapper;
+import com.awanrpn.invenmanager.mapper.UserMapper;
 import com.awanrpn.invenmanager.model.entity.User;
-import com.awanrpn.invenmanager.model.response.CreateUserResponse;
-import com.awanrpn.invenmanager.model.response.GetAllUserResponse;
+import com.awanrpn.invenmanager.model.dto.user.CreateUserResponse;
+import com.awanrpn.invenmanager.model.dto.user.GetAllUserResponse;
 import com.awanrpn.invenmanager.repository.UserRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -26,8 +27,7 @@ public class MapperTest {
     @Autowired
     Validator validator;
 
-    @Autowired
-    ObjAutoMapper objAutoMapper;
+    UserMapper objAutoMapper = DTOMapper.USER_MAPPER;
 
     @Test
     void testMapp() {

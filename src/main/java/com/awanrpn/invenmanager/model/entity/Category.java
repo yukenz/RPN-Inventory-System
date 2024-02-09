@@ -22,7 +22,12 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String name;
-    @OneToMany(mappedBy = "category")
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
     private List<Product> products;
 
+    @PreRemove
+    void preRemove() {
+        products.forEach(product -> product.setCategory(null));
+    }
 }

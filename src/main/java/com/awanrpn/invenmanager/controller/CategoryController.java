@@ -1,9 +1,10 @@
 package com.awanrpn.invenmanager.controller;
 
-import com.awanrpn.invenmanager.model.request.CategoryRequest;
-import com.awanrpn.invenmanager.model.request.CategoryResponse;
-import com.awanrpn.invenmanager.model.response.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.dto.category.CategoryRequest;
+import com.awanrpn.invenmanager.model.dto.category.CategoryResponse;
+import com.awanrpn.invenmanager.model.dto.ResponsePayloadBuilder;
 import com.awanrpn.invenmanager.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/categories")
 @RequiredArgsConstructor
+@Tag(name = "Category Module")
 public class CategoryController {
 
     private final CategoryService categoryService;
