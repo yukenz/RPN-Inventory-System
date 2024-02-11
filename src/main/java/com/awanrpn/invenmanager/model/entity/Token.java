@@ -17,4 +17,5 @@ public class Token {
     private LocalDateTime expires;
     private boolean blacklisted;
     private LocalDateTime createdAt;
+
 }

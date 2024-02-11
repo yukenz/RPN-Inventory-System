@@ -31,7 +31,7 @@ public class Order implements EntityTimeAware {
     private String customerEmail;
     private String userid;
 
-    @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL) //Order di remove, orderItems di clear
     @JsonManagedReference // Order meManage OrderItem
     private List<OrderItem> orderItems;
 

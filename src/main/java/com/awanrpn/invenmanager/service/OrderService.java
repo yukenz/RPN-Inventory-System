@@ -105,11 +105,6 @@ public class OrderService {
             Order orderInDB = orderRepository.findById(uuid)
                     .orElseThrow(() -> new IllegalArgumentException("Order Id tidak ditemukan"));
 
-            /* Clear Orphan First */
-            orderInDB.getOrderItems().clear();
-            orderRepository.saveAndFlush(orderInDB);
-
-            /* Delete Now */
             orderRepository.deleteById(uuid);
         } catch (Exception e) {
             throw new RuntimeException(e);

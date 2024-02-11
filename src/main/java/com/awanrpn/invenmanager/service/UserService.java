@@ -28,17 +28,17 @@ public class UserService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
-    @Transactional(timeout = 2)
     public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
 
 //        User user = new User();
-//
+
 //        user.setName(createUserRequest.name());
 //        user.setEmail(createUserRequest.email());
 //        user.setPassword(createUserRequest.password());
 //        user.setRole(createUserRequest.role());
 
         User user = userMapper.createUserFromRequest(createUserRequest);
+        System.out.println();
         userRepository.save(user);
         return userMapper.createUserResponse(user);
     }
@@ -107,7 +107,7 @@ public class UserService {
             }
             userRepository.deleteById(uuid);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
 
         return true;

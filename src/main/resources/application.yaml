@@ -11,7 +11,7 @@ spring:
       connection-timeout: 3000
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -22,6 +22,7 @@ logging:
   level:
     springfox.documentation: DEBUG
     org.springframework.security: DEBUG
+    org.hibernate.jpa: TRACE
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

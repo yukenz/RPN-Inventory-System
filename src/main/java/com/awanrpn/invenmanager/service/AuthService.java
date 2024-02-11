@@ -7,6 +7,7 @@ import com.awanrpn.invenmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class AuthService {
     final PasswordEncoder passwordEncoder;
     final UserRepository userRepository;
 
+    @Transactional
     public Set<Token>
     login(AuthRequest authRequest) {
 
@@ -55,17 +57,21 @@ public class AuthService {
         }
 
         /* Buatkan Token */
+        user.getTokens()
+                .add(generateToken());
+
+        User savedUserWithToken = userRepository.save(user);
+        return savedUserWithToken.getTokens();
+
+    }
+
+    private static Token generateToken() {
         LocalDateTime now = LocalDateTime.now();
-        Token token = new Token(UUID.randomUUID().toString(),
+        return new Token(UUID.randomUUID().toString(),
                 "UUID",
                 now.plus(Duration.ofMinutes(30)),
                 false,
                 now);
-        user.getTokens().add(token);
-
-        userRepository.save(user);
-        return user.getTokens();
-
     }
 
     public Set<Token>
