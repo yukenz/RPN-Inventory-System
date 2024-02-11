@@ -11,9 +11,9 @@ public class ResponsePayloadBuilder {
         return ResponseEntity.ok(responsePayload);
     }
 
-    public static ResponseEntity<ResponsePayload<?>> err(Throwable throwable, HttpStatusCode httpStatus, Integer statusCode) {
+    public static ResponseEntity<ResponsePayload<?>> err(String message, HttpStatusCode httpStatus, Integer statusCode) {
         ResponsePayload<Object> responsePayload
-                = new ResponsePayload<>(throwable.getMessage(), statusCode, null);
+                = new ResponsePayload<>(message, statusCode, null);
         return ResponseEntity.status(httpStatus).body(responsePayload);
     }
 
