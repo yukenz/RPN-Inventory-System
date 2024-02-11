@@ -22,7 +22,7 @@ logging:
   level:
     springfox.documentation: DEBUG
     org.springframework.security: DEBUG
-    org.hibernate.jpa: TRACE
+    org.hibernate.jpa: DEBUG
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

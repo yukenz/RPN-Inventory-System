@@ -1,13 +1,16 @@
 package com.awanrpn.invenmanager.service;
 
 import com.awanrpn.invenmanager.mapper.DTOMapper;
+import com.awanrpn.invenmanager.mapper.OrderMapper;
 import com.awanrpn.invenmanager.mapper.ProductMapper;
 import com.awanrpn.invenmanager.mapper.UserMapper;
+import com.awanrpn.invenmanager.model.dto.order.GetOrderResponse;
 import com.awanrpn.invenmanager.model.dto.product.GetProductResponse;
 import com.awanrpn.invenmanager.model.dto.user.*;
 import com.awanrpn.invenmanager.model.entity.Order;
 import com.awanrpn.invenmanager.model.entity.Product;
 import com.awanrpn.invenmanager.model.entity.User;
+import com.awanrpn.invenmanager.model.exception.UserModelExceptionBuilder;
 import com.awanrpn.invenmanager.repository.OrderRepository;
 import com.awanrpn.invenmanager.repository.ProductRepository;
 import com.awanrpn.invenmanager.repository.UserRepository;
@@ -21,29 +24,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
+    /* Mapper */
     private final UserMapper userMapper = DTOMapper.USER_MAPPER;
     private final ProductMapper productMapper = DTOMapper.PRODUCT_MAPPER;
+    private final OrderMapper orderMapper = DTOMapper.ORDER_MAPPER;
 
+    /* Repository */
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
+    /* Exception Builder */
+    private final UserModelExceptionBuilder userModelExceptionBuilder;
+
+    @Transactional
     public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
 
-//        User user = new User();
-
-//        user.setName(createUserRequest.name());
-//        user.setEmail(createUserRequest.email());
-//        user.setPassword(createUserRequest.password());
-//        user.setRole(createUserRequest.role());
-
         User user = userMapper.createUserFromRequest(createUserRequest);
-        System.out.println();
+
         userRepository.save(user);
         return userMapper.createUserResponse(user);
     }
 
-    @Transactional(timeout = 2, readOnly = true)
+    @Transactional(readOnly = true)
     public List<GetAllUserResponse> getAllUsers() {
 
         List<User> allUsers = userRepository.findAll();
@@ -54,24 +57,21 @@ public class UserService {
 
     }
 
-    /**
-     * @throws IllegalArgumentException If ID Not Found
-     */
     @Transactional(readOnly = true)
     public GetUserByIdResponse getUserById(String uuid) {
 
         User user = userRepository.findById(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
+                .orElseThrow(() -> userModelExceptionBuilder.userNotFound(uuid));
 
         return userMapper.getUserByIdResponse(user);
     }
 
-    @Transactional(timeout = 2)
+    @Transactional
     public UpdateUserResponse updateUser(String uuid, UpdateUserRequest updateUserRequest) {
 
         /* Throwable */
         User userInDb = userRepository.findById(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
+                .orElseThrow(() -> userModelExceptionBuilder.userNotFound(uuid));
 
         /* Update Name */
         if (updateUserRequest.name() != null) {
@@ -94,33 +94,31 @@ public class UserService {
         }
 
         User userSaved = userRepository.save(userInDb);
-
         return userMapper.updateUserResponse(userSaved);
+
     }
 
-    @Transactional(timeout = 2)
+    @Transactional
     public Boolean deleteUser(String uuid) {
 
-        try {
-            if (!userRepository.existsById(uuid)) {
-                throw new IllegalArgumentException("User Id tidak ditemukan");
-            }
-            userRepository.deleteById(uuid);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+
+        if (!userRepository.existsById(uuid)) {
+            throw userModelExceptionBuilder.userNotFound(uuid);
         }
+
+        userRepository.deleteById(uuid);
 
         return true;
     }
 
-    @Transactional(timeout = 2, readOnly = true)
+    @Transactional(readOnly = true)
     public List<GetProductResponse>
     getProductsByUser(
-            String user_uuid
+            String uuid
     ) {
 
-        User user = userRepository.findById(user_uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User Id tidak ditemukan"));
+        User user = userRepository.findById(uuid)
+                .orElseThrow(() -> userModelExceptionBuilder.userNotFound(uuid));
 
         List<Product> productsByUser = productRepository.findAllByUser(user);
 
@@ -128,11 +126,15 @@ public class UserService {
                 .map(productMapper::getProductResponse).toList();
     }
 
-    @Transactional(timeout = 2, readOnly = true)
-    public List<Order>
+    @Transactional(readOnly = true)
+    public List<GetOrderResponse>
     getOrdersByUser(String user_uuid) {
 
-        return orderRepository.findAllByUserid(user_uuid);
+        List<Order> allByUserid = orderRepository.findAllByUserid(user_uuid);
+
+        return allByUserid.stream()
+                .map(orderMapper::getOrderResponse).toList();
+
     }
 
 }

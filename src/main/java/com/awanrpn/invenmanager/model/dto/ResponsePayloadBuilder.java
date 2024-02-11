@@ -1,6 +1,6 @@
 package com.awanrpn.invenmanager.model.dto;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 public class ResponsePayloadBuilder {
@@ -11,9 +11,9 @@ public class ResponsePayloadBuilder {
         return ResponseEntity.ok(responsePayload);
     }
 
-    public static ResponseEntity<ResponsePayload<?>> err(Throwable throwable, HttpStatus httpStatus, Integer statusCode) {
-        ResponsePayload<?> responsePayload
-                = new ResponsePayload<>(throwable.toString(), statusCode, null);
+    public static ResponseEntity<ResponsePayload<?>> err(Throwable throwable, HttpStatusCode httpStatus, Integer statusCode) {
+        ResponsePayload<Object> responsePayload
+                = new ResponsePayload<>(throwable.getMessage(), statusCode, null);
         return ResponseEntity.status(httpStatus).body(responsePayload);
     }
 

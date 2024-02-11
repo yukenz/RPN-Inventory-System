@@ -6,7 +6,6 @@ import com.awanrpn.invenmanager.model.entity.User;
 import com.awanrpn.invenmanager.repository.UserRepository;
 import com.awanrpn.invenmanager.service.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +20,6 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -30,20 +28,10 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
     private final AuthenticationEntryPointController authenticationEntryPointController;
-    private final CustomAuthorizationFilter customAuthorizationFilter;
+//    private final CustomAuthorizationFilter customAuthorizationFilter;
 
     private final String ADMIN = User.Role.ADMIN.toString();
     private final String USER = User.Role.USER.toString();
-
-
-    /* Filter should not be bean */
-    @Bean
-
-    public FilterRegistrationBean<OncePerRequestFilter> tenantFilterRegistration(OncePerRequestFilter customAuthorizationFilter) {
-        FilterRegistrationBean<OncePerRequestFilter> registration = new FilterRegistrationBean<>(customAuthorizationFilter);
-        registration.setEnabled(false);
-        return registration;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -75,7 +63,7 @@ public class SecurityConfig {
                 .sessionManagement(make -> make.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(make -> make.authenticationEntryPoint(authenticationEntryPointController))
                 .authenticationManager(authManager())
-                .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthorizationFilter(userRepository), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

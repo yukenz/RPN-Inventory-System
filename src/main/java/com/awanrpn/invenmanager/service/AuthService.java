@@ -19,8 +19,8 @@ import java.util.UUID;
 public class AuthService {
 
 
-    final PasswordEncoder passwordEncoder;
-    final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Transactional
     public Set<Token>

@@ -1,9 +1,9 @@
 package com.awanrpn.invenmanager.controller;
 
 import com.awanrpn.invenmanager.model.dto.ResponsePayloadBuilder;
+import com.awanrpn.invenmanager.model.dto.order.GetOrderResponse;
 import com.awanrpn.invenmanager.model.dto.product.GetProductResponse;
 import com.awanrpn.invenmanager.model.dto.user.*;
-import com.awanrpn.invenmanager.model.entity.Order;
 import com.awanrpn.invenmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -95,7 +95,7 @@ public class UserController {
     ) {
 
         /* User Id dari Principal masih null */
-        List<Order> ordersByUser = userService.getOrdersByUser(user_uuid);
+        List<GetOrderResponse> ordersByUser = userService.getOrdersByUser(user_uuid);
         return ResponsePayloadBuilder.ok(ordersByUser);
     }
 

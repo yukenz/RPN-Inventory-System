@@ -28,11 +28,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
-
 
     private final UserRepository userRepository;
 
@@ -125,7 +124,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 .filter(token -> token.getToken().equals(tokenUUID))
                 .findFirst();
 
-        log.info("Token result {}", first.orElseGet(() -> null));
+        log.info("Token result {}", first.orElse(null));
 
         return first.isPresent()
                 && !first.get().isBlacklisted();
