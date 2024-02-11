@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.support.TransactionOperations;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
     private final AuthenticationEntryPointController authenticationEntryPointController;
+    private final TransactionOperations transactionOperations;
+
 //    private final CustomAuthorizationFilter customAuthorizationFilter;
 
     private final String ADMIN = User.Role.ADMIN.toString();
@@ -63,7 +66,7 @@ public class SecurityConfig {
                 .sessionManagement(make -> make.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(make -> make.authenticationEntryPoint(authenticationEntryPointController))
                 .authenticationManager(authManager())
-                .addFilterBefore(new CustomAuthorizationFilter(userRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthorizationFilter(userRepository, transactionOperations), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

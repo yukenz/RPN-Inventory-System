@@ -18,11 +18,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -34,9 +34,9 @@ import java.util.regex.Pattern;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
+    private final TransactionOperations transactionOperations;
 
     @Override
-    @Transactional(readOnly = true)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -51,19 +51,25 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             String userUUID = tokenDetail.userUUID;
             String tokenUUID = tokenDetail.tokenUUID;
 
-            User user = userRepository.findById(userUUID)
-                    .orElse(null);
+//            User user = userRepository.findById(userUUID)
+//                    .orElse(null);
 
-            if (isTokenValid(user, tokenUUID)) {
 
-                AbstractAuthenticationToken tokenAuth = new UsernamePasswordAuthenticationToken(
-                        user.getId(), user.getPassword(), Set.of(new SimpleGrantedAuthority(user.getRole().toString()))
-                );
-                tokenAuth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                securityContext.setAuthentication(tokenAuth);
+            transactionOperations.executeWithoutResult(status -> {
 
-            }
+                /* Transaction Manual */
+                User user = userRepository.findById(userUUID)
+                        .orElse(null);
 
+                if (isTokenValid(user, tokenUUID)) {
+                    AbstractAuthenticationToken tokenAuth = new UsernamePasswordAuthenticationToken(
+                            user.getId(), user.getPassword(), Set.of(new SimpleGrantedAuthority(user.getRole().toString()))
+                    );
+                    tokenAuth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    securityContext.setAuthentication(tokenAuth);
+                }
+
+            });
 
         }
 
@@ -120,14 +126,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
 
         Set<Token> tokens = user.getTokens();
-        Optional<Token> first = tokens.stream()
-                .filter(token -> token.getToken().equals(tokenUUID))
+        Optional<Token> token = tokens.stream()
+                .filter(obj -> obj.getToken().equals(tokenUUID))
                 .findFirst();
 
-        log.info("Token result {}", first.orElse(null));
+        log.info("Token result {}", token.orElse(null));
 
-        return first.isPresent()
-                && !first.get().isBlacklisted();
+        return token.isPresent()
+                && !token.get().isBlacklisted()
+                && LocalDateTime.now().isBefore(token.get().getExpires());
 
     }
 

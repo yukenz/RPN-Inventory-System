@@ -23,4 +23,15 @@ public class UniversalModelExceptionBuilder {
                 )
         );
     }
+
+    public ResponseStatusException unauthoried(Throwable ex) {
+        return new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                errorMessageSource.getMessage(
+                        "universal.unauthorized",
+                        new Object[]{ex.getMessage()},
+                        ErrorMessageSource.locale()
+                )
+        );
+    }
 }

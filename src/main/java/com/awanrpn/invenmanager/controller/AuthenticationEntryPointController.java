@@ -1,5 +1,6 @@
 package com.awanrpn.invenmanager.controller;
 
+import com.awanrpn.invenmanager.model.exception.UniversalModelExceptionBuilder;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,12 +20,15 @@ import java.io.IOException;
 public class AuthenticationEntryPointController implements AuthenticationEntryPoint {
 
     private final ApplicationContext context;
-    private HandlerExceptionResolver her;
+    private final UniversalModelExceptionBuilder universalModelExceptionBuilder;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.warn("Spring Security Throw Exception when Auth");
-        her = context.getBean("handlerExceptionResolver", HandlerExceptionResolver.class);
-        her.resolveException(request, response, null, authException);
+
+        HandlerExceptionResolver her = context.getBean("handlerExceptionResolver", HandlerExceptionResolver.class);
+
+        her.resolveException(request, response, null,
+                universalModelExceptionBuilder.unauthoried(authException));
     }
 }
