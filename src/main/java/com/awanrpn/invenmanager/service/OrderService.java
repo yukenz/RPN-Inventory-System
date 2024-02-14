@@ -8,6 +8,7 @@ import com.awanrpn.invenmanager.model.dto.order.GetAllOrderResponse;
 import com.awanrpn.invenmanager.model.dto.order.GetOrderByIdResponse;
 import com.awanrpn.invenmanager.model.dto.order.GetOrderResponse;
 import com.awanrpn.invenmanager.model.dto.orderItem.GetOrderItemResponse;
+import com.awanrpn.invenmanager.model.dto.user.GetUserByIdResponse;
 import com.awanrpn.invenmanager.model.entity.Order;
 import com.awanrpn.invenmanager.model.entity.OrderItem;
 import com.awanrpn.invenmanager.repository.OrderItemRepository;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,17 +31,23 @@ public class OrderService {
     private final OrderMapper orderMapper = DTOMapper.ORDER_MAPPER;
     private final OrderItemMapper orderItemMapper = DTOMapper.ORDER_ITEM_MAPPER;
 
-    @Transactional(timeout = 2)
+    @Transactional()
     public CreateOrderResponse
-    createOrder() {
-
+    createOrder(GetUserByIdResponse user) {
 
         //Check
         // With Principal
         //Find User
         //FInd email
 
+
         Order order = new Order();
+        /* User Detail Set */
+        order.setUserid(user.id());
+        order.setCustomerEmail(user.email());
+        order.setCustomerName(user.name());
+
+        /* Orchestration */
         order.setTotalPrice(BigInteger.ZERO);
         Order savedOrder = orderRepository.save(order);
 
@@ -57,7 +65,7 @@ public class OrderService {
                 .toList();
     }
 
-    @Transactional(timeout = 2, readOnly = true)
+    @Transactional(readOnly = true)
     public GetOrderByIdResponse
     getOrderById(String uuid) {
 
@@ -67,19 +75,21 @@ public class OrderService {
         return orderMapper.getOrderByIdResponse(order);
     }
 
-    @Transactional()
+    @Transactional
     public GetOrderResponse
     updateOrderById(
             String uuid,
-            List<String> orderItemsUUID
+            Set<String> orderItemsUUID
     ) {
 
         Order orderPreSaved = orderRepository.findById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("ID Order Tidak Ditemukan"));
 
-        List<OrderItem> orderItemsPreSaved = orderPreSaved.getOrderItems();
+        /* Dapatkan Order Item dan kosongkan */
+        Set<OrderItem> orderItemsPreSaved = orderPreSaved.getOrderItems();
         orderItemsPreSaved.clear();
 
+        /* Masukan Order Item baru */
         orderItemsUUID.forEach((orderItemUUID -> {
             //Dapatkan OrderItem by ID
             OrderItem orderItem = orderItemRepository
@@ -92,11 +102,12 @@ public class OrderService {
         ));
 
         Order orderSaved = orderRepository.saveAndFlush(orderPreSaved);
+        orderPreSaved.refreshTotalPrice();
 
         return orderMapper.getOrderResponse(orderSaved);
     }
 
-    @Transactional(timeout = 2)
+    @Transactional()
     public Boolean
     deleteOrder(String uuid) {
 

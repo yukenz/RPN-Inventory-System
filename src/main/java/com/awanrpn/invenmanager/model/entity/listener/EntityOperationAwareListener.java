@@ -6,15 +6,15 @@ import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 
 
-public class EntityTimeAwareListener {
+public class EntityOperationAwareListener {
 
     @PrePersist
-    void preSave(EntityTimeAware object) {
+    void preSave(EntityOperationAware object) {
         object.onCreate(LocalDateTime.now());
     }
 
     @PreUpdate
-    void preUpdate(EntityTimeAware object) {
+    void preUpdate(EntityOperationAware object) {
         object.onUpdate(LocalDateTime.now());
     }
 

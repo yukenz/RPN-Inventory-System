@@ -1,8 +1,7 @@
 package com.awanrpn.invenmanager.model.entity;
 
-import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAware;
-import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAwareListener;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAware;
+import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAwareListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,14 +13,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "order_item")
-@EntityListeners({EntityTimeAwareListener.class})
+@EntityListeners({EntityOperationAwareListener.class})
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class OrderItem implements EntityTimeAware {
+public class OrderItem implements EntityOperationAware {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +31,6 @@ public class OrderItem implements EntityTimeAware {
             name = "order_id",
             referencedColumnName = "id"
     )
-    @JsonBackReference // OrderItem Dimanage Order
     private Order order;
 
     @ManyToOne
@@ -53,10 +51,19 @@ public class OrderItem implements EntityTimeAware {
     @Override
     public void onCreate(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        calculateUnitPrice();
     }
 
     @Override
     public void onUpdate(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+        calculateUnitPrice();
     }
+
+    private void calculateUnitPrice() {
+        BigInteger qty = BigInteger.valueOf(quantity);
+        BigInteger unitPrice = product.getPrice().multiply(qty);
+        setUnitPrice(unitPrice);
+    }
+
 }

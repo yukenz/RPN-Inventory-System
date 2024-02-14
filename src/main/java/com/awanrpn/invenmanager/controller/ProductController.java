@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -28,10 +29,11 @@ public class ProductController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>
     createProduct(
-            @RequestBody CreateProductRequest createProductRequest
+            @RequestBody CreateProductRequest createProductRequest,
+            Principal principal
     ) {
 
-        CreateProductResponse createProductResponse = productService.createProduct(createProductRequest);
+        CreateProductResponse createProductResponse = productService.createProduct(createProductRequest,principal.getName());
         return ResponsePayloadBuilder.ok(createProductResponse);
     }
 

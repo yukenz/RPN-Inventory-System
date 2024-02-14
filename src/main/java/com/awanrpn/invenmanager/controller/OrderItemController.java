@@ -29,6 +29,11 @@ public class OrderItemController {
     createOrderItem(
             @RequestBody OrderItemRequest orderItemRequest
     ) {
+        /*
+         * 1. Order harus ada
+         * 2. Product harus ada
+         * 3. Operasi perhitungan dilakukan di Listener
+         * */
         CreateOrderItemResponse createOrderItemResponse = orderItemService.createOrderItem(orderItemRequest);
         return ResponsePayloadBuilder.ok(createOrderItemResponse);
     }
@@ -61,8 +66,23 @@ public class OrderItemController {
             @RequestBody OrderItemRequest orderItemRequest
     ) {
 
+        /*
+        * 1. Order Item harus ada
+        * 2. Order harus ada
+        * */
         GetOrderItemResponse updateOrderItemById = orderItemService.updateOrderItemById(uuid, orderItemRequest);
         return ResponsePayloadBuilder.ok(updateOrderItemById);
+    }
+
+    @Operation(summary = "Delete Order Item by ID")
+    @DeleteMapping(path = "/{orderItemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>
+    deleteOrderItem(
+            @PathVariable(name = "orderItemId") String uuid
+    ) {
+
+        Boolean isSuccess = orderItemService.deleteOrderItemById(uuid);
+        return ResponsePayloadBuilder.ok(isSuccess);
     }
 
 }

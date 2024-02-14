@@ -1,7 +1,7 @@
 package com.awanrpn.invenmanager.model.entity;
 
-import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAware;
-import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAwareListener;
+import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAware;
+import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAwareListener;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -18,13 +18,13 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@EntityListeners({EntityTimeAwareListener.class})
+@EntityListeners({EntityOperationAwareListener.class})
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class User implements EntityTimeAware {
+public class User implements EntityOperationAware {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

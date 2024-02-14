@@ -26,11 +26,11 @@ public class ProductService {
     private final ProductMapper productMapper = DTOMapper.PRODUCT_MAPPER;
 
 
-    @Transactional(timeout = 2)
+    @Transactional()
     public CreateProductResponse
-    createProduct(CreateProductRequest createProductRequest) {
+    createProduct(CreateProductRequest createProductRequest, String user_uuid) {
 
-        User user = userRepository.findById(createProductRequest.user_uuid())
+        User user = userRepository.findById(user_uuid)
                 .orElseThrow(() -> new IllegalArgumentException("ID User tidak ditemukan"));
 
         Product productPreSave = productMapper.createProductFromRequest(createProductRequest);
@@ -41,7 +41,7 @@ public class ProductService {
 
     }
 
-    @Transactional(timeout = 2, readOnly = true)
+    @Transactional(readOnly = true)
     public List<GetProductResponse>
     getAllProducts() {
 
@@ -52,7 +52,7 @@ public class ProductService {
                 .toList();
     }
 
-    @Transactional(timeout = 2, readOnly = true)
+    @Transactional(readOnly = true)
     public GetProductResponse
     getProductById(
             String uuid
@@ -63,7 +63,7 @@ public class ProductService {
         return productMapper.getProductResponse(product);
     }
 
-    @Transactional(timeout = 2)
+    @Transactional()
     public UpdateProductResponse
     updateProductById(
             String uuid,
@@ -98,7 +98,7 @@ public class ProductService {
         return productMapper.updateProductResponse(productSaved);
     }
 
-    @Transactional(timeout = 2)
+    @Transactional()
     public Boolean deleteProduct(String uuid) {
 
         try {

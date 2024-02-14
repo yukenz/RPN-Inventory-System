@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -28,7 +27,7 @@ public class OrderItemService {
     private final ProductRepository productRepository;
     private final OrderItemMapper orderItemMapper = DTOMapper.ORDER_ITEM_MAPPER;
 
-    @Transactional(timeout = 2)
+    @Transactional
     public CreateOrderItemResponse
     createOrderItem(OrderItemRequest orderItemRequest) {
 
@@ -43,16 +42,14 @@ public class OrderItemService {
                 .orElseThrow(() -> new IllegalArgumentException("ID Product Tidak Ditemukan"));
 
         OrderItem orderItem = new OrderItem();
-
         orderItem.setOrder(order);
         orderItem.setProduct(product);
         orderItem.setQuantity(quantity);
-        orderItem.setUnitPrice(
-                product.getPrice()
-                        .multiply(BigInteger.valueOf(quantity.longValue()))
-        );
 
-        OrderItem orderItemInDB = orderItemRepository.save(orderItem);
+        OrderItem orderItemInDB = orderItemRepository
+                .saveAndFlush(orderItem);
+
+        order.refreshTotalPrice();
 
         return orderItemMapper.createOrderItemResponse(orderItemInDB);
     }
@@ -79,6 +76,7 @@ public class OrderItemService {
         return orderItemMapper.getOrderItemResponse(orderItem);
     }
 
+    @Transactional
     public GetOrderItemResponse
     updateOrderItemById(
             String uuid,
@@ -105,13 +103,33 @@ public class OrderItemService {
         orderItem.setProduct(product);
         orderItem.setQuantity(quantity);
 
-        orderItem.setUnitPrice(
-                product.getPrice()
-                        .multiply(BigInteger.valueOf(quantity.longValue()))
-        );
+        OrderItem orderItemInDB = orderItemRepository.saveAndFlush(orderItem);
+        order.refreshTotalPrice();
 
-        OrderItem orderItemInDB = orderItemRepository.save(orderItem);
         return orderItemMapper.getOrderItemResponse(orderItemInDB);
+    }
+
+    @Transactional()
+    public Boolean
+    deleteOrderItemById(String uuid) {
+
+        try {
+
+            OrderItem orderItem = orderItemRepository.findById(uuid)
+                    .orElseThrow(() -> new IllegalArgumentException("Order Item Id tidak ditemukan"));
+
+            Order order = orderItem.getOrder();
+            order.getOrderItems().remove(orderItem);
+            order.refreshTotalPrice();
+
+            orderRepository.save(order);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return true;
+
     }
 
 }

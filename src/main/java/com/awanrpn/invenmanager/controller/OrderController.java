@@ -6,15 +6,20 @@ import com.awanrpn.invenmanager.model.dto.order.GetAllOrderResponse;
 import com.awanrpn.invenmanager.model.dto.order.GetOrderByIdResponse;
 import com.awanrpn.invenmanager.model.dto.order.GetOrderResponse;
 import com.awanrpn.invenmanager.model.dto.orderItem.GetOrderItemResponse;
+import com.awanrpn.invenmanager.model.dto.user.GetUserByIdResponse;
 import com.awanrpn.invenmanager.service.OrderService;
+import com.awanrpn.invenmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/api/orders")
@@ -23,13 +28,17 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final UserService userService;
 
     @Operation(summary = "Create Order")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>
     createOrder(
+            Principal principal
     ) {
-        CreateOrderResponse createOrderResponse = orderService.createOrder();
+
+        GetUserByIdResponse user_uuid = userService.getUserById(principal.getName());
+        CreateOrderResponse createOrderResponse = orderService.createOrder(user_uuid);
         return ResponsePayloadBuilder.ok(createOrderResponse);
     }
 
@@ -55,11 +64,16 @@ public class OrderController {
 
     @Operation(summary = "Update Order by ID")
     @PutMapping(path = "/{orderId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<?>
     updateOrderById(
             @PathVariable(name = "orderId") String uuid,
-            @RequestBody List<String> orderItemsUUID
+            @RequestBody Set<String> orderItemsUUID
     ) {
+
+        if (true) {
+            return ResponsePayloadBuilder.err("Deprecated", HttpStatus.FORBIDDEN, 400);
+        }
 
         GetOrderResponse getOrderResponse = orderService.updateOrderById(uuid, orderItemsUUID);
         return ResponsePayloadBuilder.ok(getOrderResponse);

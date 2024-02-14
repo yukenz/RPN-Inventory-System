@@ -1,7 +1,7 @@
 package com.awanrpn.invenmanager.model.entity;
 
-import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAware;
-import com.awanrpn.invenmanager.model.entity.listener.EntityTimeAwareListener;
+import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAware;
+import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAwareListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -18,13 +18,13 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
-@EntityListeners({EntityTimeAwareListener.class})
+@EntityListeners({EntityOperationAwareListener.class})
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Product implements EntityTimeAware {
+public class Product implements EntityOperationAware {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

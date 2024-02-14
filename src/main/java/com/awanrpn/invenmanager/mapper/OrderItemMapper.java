@@ -8,21 +8,20 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface OrderItemMapper {
 
 
-    default List<String> orderItemListUUID(List<OrderItem> orderItems) {
+    default List<String> orderItemListUUID(Collection<OrderItem> orderItems) {
         return orderItems.stream()
                 .map(OrderItem::getId).toList();
     }
 
-    @Mappings({
-            @Mapping(source = "orderItem.order.id", target = "order_uuid"),
-            @Mapping(source = "orderItem.product.id", target = "product_uuid")
-    })
+    @Mapping(source = "orderItem.product.id", target = "product_uuid")
     SimpleOrderItem simpleOrderItem(OrderItem orderItem);
 
     @Mappings({

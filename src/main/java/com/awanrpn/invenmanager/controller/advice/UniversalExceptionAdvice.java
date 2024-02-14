@@ -30,6 +30,5 @@ public class UniversalExceptionAdvice {
 
         return ResponsePayloadBuilder.err(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR, 500);
 
-
     }
 }
