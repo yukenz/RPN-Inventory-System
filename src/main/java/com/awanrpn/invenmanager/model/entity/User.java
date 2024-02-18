@@ -2,7 +2,6 @@ package com.awanrpn.invenmanager.model.entity;
 
 import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAware;
 import com.awanrpn.invenmanager.model.entity.listener.EntityOperationAwareListener;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -55,7 +54,6 @@ public class User implements EntityOperationAware {
     private Set<Token> tokens;
 
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference // User memanage Product
     private List<Product> products;
 
     private LocalDateTime createdAt;
@@ -69,5 +67,10 @@ public class User implements EntityOperationAware {
     @Override
     public void onUpdate(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @PreRemove
+    public void preRemove() {
+        products.forEach(product -> product.setUser(null));
     }
 }

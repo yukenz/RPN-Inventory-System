@@ -102,11 +102,10 @@ public class UserService {
     public Boolean deleteUser(String uuid) {
 
 
-        if (!userRepository.existsById(uuid)) {
-            throw userModelExceptionBuilder.userNotFound(uuid);
-        }
+        User user = userRepository.findById(uuid)
+                .orElseThrow(() -> userModelExceptionBuilder.userNotFound(uuid));
 
-        userRepository.deleteById(uuid);
+        userRepository.delete(user);
 
         return true;
     }

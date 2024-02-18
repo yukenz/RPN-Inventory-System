@@ -1,9 +1,10 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    username: root
-    password: awan
-    url: jdbc:mariadb://localhost:3306/rpnis
+    username: yukenz
+    password: RbbQiXJmCcijnqOXc5Wtpz-FKaHSAMqW
+    #    url: jdbc:mariadb://rpnis.railway.internal:3306/rpnis
+    url: jdbc:mariadb://rpnisdb.railway.internal:3306/rpnis
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       minimum-idle: 10
@@ -11,7 +12,7 @@ spring:
       connection-timeout: 3000
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true

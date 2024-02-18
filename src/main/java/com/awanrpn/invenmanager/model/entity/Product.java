@@ -60,8 +60,6 @@ public class Product implements EntityOperationAware {
             name = "user_id",
             referencedColumnName = "id"
     )
-    @NotNull
-    @JsonBackReference //Product di manage oleh user
     private User user;
 
 //    @OneToMany(mappedBy = "product")
